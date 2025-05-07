@@ -14,7 +14,7 @@ var logger = wlogging.MustGetFileLoggerWithoutName(log.LogConfig)
 
 func main() {
 	// handle client
-	isCli := memmq.StartMain()
+	isCli, broker := memmq.StartMain()
 	// if cli mode exit
 	if isCli {
 		return
@@ -23,5 +23,8 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
+	// cleanup broker
+	broker.Close()
 	logger.Info("MQ server stopped")
+
 }

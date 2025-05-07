@@ -17,6 +17,7 @@ type handler struct{}
 func (h *handler) Pub(ctx context.Context, req *mq.PubRequest) (*mq.PubResponse, error) {
 	logger.Infof("Pub topic: %s payload: %s", req.Topic, string(req.Payload))
 	if err := broker.Publish(req.Topic, req.Payload); err != nil {
+		logger.Errorf("pub error: %v", err)
 		return nil, fmt.Errorf("pub error: %v", err)
 	}
 	return new(mq.PubResponse), nil

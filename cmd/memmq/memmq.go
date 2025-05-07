@@ -145,7 +145,7 @@ func cli() {
 	// process subscribe
 	ch, err := broker.Subscribe(*topic)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 		return
 	}
 	defer broker.Unsubscribe(*topic, ch)
@@ -170,14 +170,12 @@ func cli() {
 	}
 }
 
-func StartMain() bool {
+func StartMain() (bool, broker.Broker) {
 	// handle client
 	if *client || *interactive {
 		cli()
-		return true
+		return true, nil
 	}
-	// cleanup broker
-	defer broker.Default.Close()
 	options := []server.Option{
 		server.WithAddress(*address),
 	}
@@ -206,5 +204,5 @@ func StartMain() bool {
 			logger.Fatal(err)
 		}
 	}()
-	return false
+	return false, broker.Default
 }

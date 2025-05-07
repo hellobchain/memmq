@@ -14,6 +14,6 @@
 .idea
 .DS_Store
 bin
-log
 logs
 memmq.log
+logs

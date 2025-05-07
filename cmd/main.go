@@ -6,10 +6,11 @@ import (
 	"syscall"
 
 	"github.com/hellobchain/memmq/cmd/memmq"
+	"github.com/hellobchain/memmq/core/log"
 	"github.com/hellobchain/wswlog/wlogging"
 )
 
-var logger = wlogging.MustGetLoggerWithoutName()
+var logger = wlogging.MustGetFileLoggerWithoutName(log.LogConfig)
 
 func main() {
 	// handle client

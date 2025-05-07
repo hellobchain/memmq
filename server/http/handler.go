@@ -7,8 +7,11 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hellobchain/memmq/broker"
+	"github.com/hellobchain/memmq/core/log"
+	"github.com/hellobchain/wswlog/wlogging"
 )
 
+var logger = wlogging.MustGetFileLoggerWithoutName(log.LogConfig)
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -19,7 +22,7 @@ var upgrader = websocket.Upgrader{
 
 func pub(w http.ResponseWriter, r *http.Request) {
 	topic := r.URL.Query().Get("topic")
-
+	logger.Infof("pub topic: %s", topic)
 	if websocket.IsWebSocketUpgrade(r) {
 		conn, err := upgrader.Upgrade(w, r, w.Header())
 		if err != nil {
@@ -33,6 +36,7 @@ func pub(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				continue
 			}
+			logger.Infof("pub topic: %s, payload: %s", topic, string(b))
 			broker.Publish(topic, b)
 		}
 	} else {
@@ -42,6 +46,7 @@ func pub(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		r.Body.Close()
+		logger.Infof("pub topic: %s, payload: %s", topic, string(b))
 		if err := broker.Publish(topic, b); err != nil {
 			http.Error(w, "Pub error", http.StatusInternalServerError)
 		}
@@ -71,7 +76,7 @@ func sub(w http.ResponseWriter, r *http.Request) {
 	}
 
 	topic := r.URL.Query().Get("topic")
-
+	logger.Info("Subscribing to topic: %s", topic)
 	ch, err := broker.Subscribe(topic)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Could not retrieve events: %v", err), http.StatusInternalServerError)
@@ -82,6 +87,7 @@ func sub(w http.ResponseWriter, r *http.Request) {
 	for {
 		select {
 		case e := <-ch:
+			logger.Info("Sending event: %s", string(e))
 			if err = wr.Write(e); err != nil {
 				return
 			}

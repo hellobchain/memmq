@@ -1,3 +1,0 @@
-[34m2025-05-07 14:46:21.396 CST [main.init] main -> INFO 001[0m HTTP transport enabled
-[34m2025-05-07 14:46:21.396 CST [main.init] main -> INFO 002[0m MQ listening on :8081
-[34m2025-05-07 14:46:31.026 CST [main.init] main -> INFO 003[0m MQ server stopped

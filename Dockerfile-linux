@@ -1,0 +1,20 @@
+FROM alpine:3.14
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
+    && apk update \
+    && apk add tzdata \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone
+RUN apk add --update ca-certificates && \
+    rm -rf /var/cache/apk/* /tmp/*
+WORKDIR /memmq
+# 将二进制文件从 /build 目录复制到这里
+COPY bin/memmq.bin /usr/local/bin
+
+# 启动容器时运行的命令
+WORKDIR /memmq
+CMD memmq.bin
+
+
+
+
+
